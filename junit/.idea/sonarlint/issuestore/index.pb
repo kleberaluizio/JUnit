@@ -13,8 +13,6 @@ b
 .src/main/java/com/telusko/learning/Shapes.java,1\a\1a7e3910359bba9d3675c4d97312844edd46eaaf
 b
 2src/test/java/com/telusko/learning/ShapesTest.java,0\1\01b7b64f3db2f77c2cf59466335e4312c22f5165
-^
-.src/main/java/com/telusko/learning/Arrays.java,c\a\ca508f5fd7516894264b6f7beebedd67ac25d05a
 b
 2src/test/java/com/telusko/learning/ArraysTest.java,0\b\0bacbf843355dfe1f0428ac028679065c4d6c629
 d
