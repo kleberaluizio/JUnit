@@ -6,11 +6,12 @@ import org.junit.jupiter.api.*;
 
 class ShapesTest
 {
-	Shapes s;
+	static Shapes s;
 
-	@BeforeEach
-	void init(){
+	@BeforeAll
+	static void init(){
 		s = new Shapes();
+		System.out.println("Init tests!");
 	}
 
 	@Nested
