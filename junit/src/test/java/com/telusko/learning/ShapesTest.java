@@ -4,14 +4,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.*;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ShapesTest
 {
-	static Shapes s;
-
-	@BeforeAll
-	static void init(){
+	Shapes s;
+	ShapesTest(){
 		s = new Shapes();
-		System.out.println("Init tests!");
+		System.out.println("Init Shapes Variable only once!");
 	}
 
 	@Nested
