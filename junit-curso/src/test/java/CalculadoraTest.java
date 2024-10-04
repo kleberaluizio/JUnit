@@ -8,11 +8,12 @@ import org.junit.jupiter.api.Test;
 class CalculadoraTest
 {
 
+	Calculadora calculadora = new Calculadora();
+
 	@Test
 	@DisplayName("Should return valid result when valid input")
 	void testSoma_shouldReturnValidResultWhenValidInput() {
 		// Arrange - GIVEN
-		Calculadora calculadora = new Calculadora();
 		int a = 5;
 		int b = 2;
 
@@ -28,7 +29,6 @@ class CalculadoraTest
 	@DisplayName("Should return correct value when valid input")
 	void testDividir_shouldReturnCorrectIntegerValueWhenValidInput() {
 		// Arrange
-		Calculadora calculadora = new Calculadora();
 		int numerador = 10;
 		int denominador = 2;
 
@@ -44,7 +44,6 @@ class CalculadoraTest
 	@DisplayName("Should return correct negative value when valid input")
 	void testDividir_shouldReturnCorrectNegativeValueWhenValidInput() {
 		// Arrange
-		Calculadora calculadora = new Calculadora();
 		int numerador = 10;
 		int denominador = -2;
 
@@ -60,7 +59,6 @@ class CalculadoraTest
 	@DisplayName("Should return correct float value when valid input")
 	void testDividir_shouldReturnCorrectFloatValueWhenValidInput() {
 		// Arrange
-		Calculadora calculadora = new Calculadora();
 		int numerador = 10;
 		int denominador = 3;
 
@@ -73,17 +71,34 @@ class CalculadoraTest
 	}
 
 	@Test
-	@DisplayName("Should throws exception when ")
-	void testDividir_whenInvalidInput_thenThrowsException()
+	@DisplayName("Should throws exception when den is Zero ")
+	void testDividir_shoudlThrowExceptionWhenDenIsZero()
 	{
 		// Arrange
-		Calculadora calculadora = new Calculadora();
 		int numerador = 10;
 		int denominador = 0;
 
 		// Act and  Assert
-		Assertions.assertThrows(
-			ArithmeticException.class, () -> calculadora.dividir(numerador, denominador));
+		ArithmeticException exception = Assertions.assertThrows(ArithmeticException.class,
+			() -> calculadora.dividir(numerador, denominador));
+		Assertions.assertEquals("/ by zero", exception.getMessage());
+	}
+
+	@Test
+	@DisplayName("Should throws exception when den is Zero - JUnit4 ")
+	void testDividir_shoudlThrowExceptionWhenDenIsZeroJUnit4()
+	{
+		// Arrange
+		int numerador = 10;
+		int denominador = 0;
+
+		// Act and  Assert
+		try {
+			float result = calculadora.dividir(numerador, denominador);
+			Assertions.fail("Should throw exception");
+		} catch (ArithmeticException e){
+			Assertions.assertEquals("/ by zero", e.getMessage());
+		}
 	}
 
 	@Test
