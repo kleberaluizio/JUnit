@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 class CalculadoraTest
 {
 
-	Calculadora calculadora = new Calculadora();
+	private static final Calculadora calculadora = new Calculadora();
 
 	@Test
 	@DisplayName("Should return valid result when valid input")
