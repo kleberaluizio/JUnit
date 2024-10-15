@@ -1,5 +1,6 @@
 package barriga.domain;
 
+import barriga.domain.builders.UserBuilder;
 import barriga.exceptions.ValidationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -27,26 +28,19 @@ class UserTest {
     @Test
     @DisplayName("Refatora o teste anterior de modo a garantir que todos os assertions sejam executados")
     public void shouldCreateValidUserWhenDataIsValid_ASSERT_ALL() {
-        String name = "John John";
-        String email = "john@john.com";
-        String password = "password";
-        User user = new User(null, name, email, password);
+        User user = UserBuilder.aUser().withName("Paul").now();
 
         Assertions.assertAll("User",
-            ()-> assertEquals("John", user.getName()),
+            ()-> assertEquals("Paul", user.getName()),
             ()-> assertEquals("john@john.com", user.getEmail()),
-            ()-> assertEquals("passworda", user.getPassword())
+            ()-> assertEquals("password", user.getPassword())
         );
     }
 
     @Test
     @DisplayName("Should reject user when name is not provided")
     public void shouldRejectUserWhenNameIsNotProvided() {
-        String name = "";
-        String email = "john@john.com";
-        String password = "password";
-
-        ValidationException exception = assertThrows(ValidationException.class, () -> new User(null, name, email, password));
+        ValidationException exception = assertThrows(ValidationException.class,  ()-> UserBuilder.aUser().withName(null).now());
         Assertions.assertEquals("Name cannot be null or empty", exception.getMessage());
     }
 }
