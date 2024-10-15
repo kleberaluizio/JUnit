@@ -1,8 +1,13 @@
 package barriga.domain.builders;
 
-import barriga.domain.User;
+import barriga.domain.User2;
 
 import static java.lang.String.format;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -22,6 +27,7 @@ import java.util.Set;
 public class BuilderMaster {
 
     Set<String> importList = new HashSet<>();
+    static String packageName = BuilderMaster.class.getPackage().getName();
 
     @SuppressWarnings("rawtypes")
     public void createBuilderClass(Class clazz) {
@@ -78,18 +84,26 @@ public class BuilderMaster {
             } else {
                 builder.append(", ");
             }
-            builder.append(field.getName());
+            builder.append("this.").append(field.getName());
         }
         builder.append(");\n\t}\n");
 
         builder.append("}");
 
+        StringBuilder rawBuilderClass = new StringBuilder();
         for (String str : importList) {
             if(!str.contains("java.lang."))
+                rawBuilderClass.append(str).append("\n\n");
                 System.out.println(str);
         }
         System.out.println(format("import %s;\n", clazz.getCanonicalName()));
         System.out.println(builder.toString());
+
+        rawBuilderClass.append("package ").append(packageName).append(";\n\n");
+        rawBuilderClass.append("import ").append(clazz.getCanonicalName()).append(";\n\n");
+        rawBuilderClass.append(builder);
+
+        writeToFile(className, String.valueOf(rawBuilderClass));
     }
 
     @SuppressWarnings("rawtypes")
@@ -134,8 +148,22 @@ public class BuilderMaster {
             importList.add("import " + clazz + ";");
     }
 
+    private static void writeToFile(String builderClassName, String content) {
+        String directoryPath = "src/test/java/" + packageName.replace(".", "/");
+        File dir = new File(directoryPath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(dir, builderClassName + ".java")))) {
+            writer.write(content);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
         BuilderMaster master = new BuilderMaster();
-        master.createBuilderClass(User.class);
+        master.createBuilderClass(User2.class);
     }
 }
