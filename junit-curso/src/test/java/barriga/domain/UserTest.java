@@ -1,5 +1,6 @@
 package barriga.domain;
 
+import barriga.exceptions.ValidationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,5 +39,14 @@ class UserTest {
         );
     }
 
+    @Test
+    @DisplayName("Should reject user when name is not provided")
+    public void shouldRejectUserWhenNameIsNotProvided() {
+        String name = "";
+        String email = "john@john.com";
+        String password = "password";
 
+        ValidationException exception = assertThrows(ValidationException.class, () -> new User(null, name, email, password));
+        Assertions.assertEquals("Name cannot be null or empty", exception.getMessage());
+    }
 }
