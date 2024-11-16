@@ -21,7 +21,7 @@ public class User {
             throw new ValidationException("Name cannot be null or empty");
         }
         if (email == null || email.trim().isEmpty()) {
-            throw new ValidationException("Email cannot be null or empty");
+            throw new ValidationException("E-mail cannot be null or empty");
         }
         if (password == null || password.trim().isEmpty()) {
             throw new ValidationException("Password cannot be null or empty");

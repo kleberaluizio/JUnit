@@ -19,8 +19,8 @@ class UserTest {
         String password = "password";
         User user = new User(null, name, email, password);
 
-        assertEquals("John", user.getName());
-        assertEquals("john@john.coma", user.getEmail());
+        assertEquals("John John", user.getName());
+        assertEquals("john@john.com", user.getEmail());
         assertEquals(password, user.getPassword());
 
     }
@@ -42,5 +42,18 @@ class UserTest {
     public void shouldRejectUserWhenNameIsNotProvided() {
         ValidationException exception = assertThrows(ValidationException.class,  ()-> UserBuilder.aUser().withName(null).now());
         Assertions.assertEquals("Name cannot be null or empty", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Should reject user when e-mail is not provided")
+    public void shouldRejectUserWhenEmailIsNotProvided() {
+        ValidationException exception = assertThrows(ValidationException.class,  ()-> UserBuilder.aUser().withEmail("").now());
+        Assertions.assertEquals("E-mail cannot be null or empty", exception.getMessage());
+    }
+    @Test
+    @DisplayName("Should reject user when password is not provided")
+    public void shouldRejectUserWhenPasswordIsNotProvided() {
+        ValidationException exception = assertThrows(ValidationException.class,  ()-> UserBuilder.aUser().withPassword(null).now());
+        Assertions.assertEquals("Password cannot be null or empty", exception.getMessage());
     }
 }
