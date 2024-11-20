@@ -1,5 +1,6 @@
 package barriga.domain.builders;
 
+import barriga.domain.Account;
 import barriga.domain.User2;
 
 import static java.lang.String.format;
@@ -49,7 +50,7 @@ public class BuilderMaster {
 
         builder.append(format("\n\tprivate %s(){}\n\n", className));
 
-        builder.append(format("\tpublic static %s um%s() {\n", className, clazz.getSimpleName()));
+        builder.append(format("\tpublic static %s a%s() {\n", className, clazz.getSimpleName()));
         builder.append(format("\t\t%s builder = new %s();\n", className, className));
         builder.append("\t\tinitializeDefaultData(builder);\n");
         builder.append("\t\treturn builder;\n");
@@ -91,15 +92,13 @@ public class BuilderMaster {
         builder.append("}");
 
         StringBuilder rawBuilderClass = new StringBuilder();
+        rawBuilderClass.append("package ").append(packageName).append(";\n\n");
+
         for (String str : importList) {
             if(!str.contains("java.lang."))
-                rawBuilderClass.append(str).append("\n\n");
-                System.out.println(str);
+                rawBuilderClass.append(str).append("\n");
         }
-        System.out.println(format("import %s;\n", clazz.getCanonicalName()));
-        System.out.println(builder.toString());
 
-        rawBuilderClass.append("package ").append(packageName).append(";\n\n");
         rawBuilderClass.append("import ").append(clazz.getCanonicalName()).append(";\n\n");
         rawBuilderClass.append(builder);
 
@@ -164,6 +163,6 @@ public class BuilderMaster {
 
     public static void main(String[] args) {
         BuilderMaster master = new BuilderMaster();
-        master.createBuilderClass(User2.class);
+        master.createBuilderClass(Account.class);
     }
 }
