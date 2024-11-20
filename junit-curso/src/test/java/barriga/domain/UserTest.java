@@ -77,7 +77,7 @@ class UserTest {
 
     }
 
-    // USANDO ARQUIVO CSV
+    // Using CSV File
     @DisplayName("Should Reject User When")
     @ParameterizedTest(name = "{4}")
     @CsvFileSource(
@@ -86,6 +86,24 @@ class UserTest {
             numLinesToSkip = 1
     )
     void shouldRejectUserWhen2(String name, String email, String password, String expectedExceptionMessage, String displayMessage) {
+        ValidationException exception = assertThrows(ValidationException.class, () ->
+                {
+                    UserBuilder.aUser().withName(name).withEmail(email).withPassword(password).now();
+                }
+        );
+        Assertions.assertEquals(expectedExceptionMessage, exception.getMessage());
+
+    }
+
+    // Using CSV file and header = true
+    @DisplayName("Should Reject User When")
+    @ParameterizedTest
+    @CsvFileSource(
+            files = "src/test/resources/userMandatoryFields.csv",
+            nullValues = {"NULL", "N/A", "undefined"},
+            useHeadersInDisplayName = true
+    )
+    void shouldRejectUserWhen3(String name, String email, String password, String expectedExceptionMessage, String displayMessage) {
         ValidationException exception = assertThrows(ValidationException.class, () ->
                 {
                     UserBuilder.aUser().withName(name).withEmail(email).withPassword(password).now();
