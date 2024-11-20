@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -67,6 +68,24 @@ class UserTest {
             "Josef, josef@email.com, undefined, Password cannot be null or empty, ... password is null or empty",},
             nullValues = {"NULL", "N/A", "undefined"})
     void shouldRejectUserWhen(String name, String email, String password, String expectedExceptionMessage, String displayMessage) {
+        ValidationException exception = assertThrows(ValidationException.class, () ->
+                {
+                    UserBuilder.aUser().withName(name).withEmail(email).withPassword(password).now();
+                }
+        );
+        Assertions.assertEquals(expectedExceptionMessage, exception.getMessage());
+
+    }
+
+    // USANDO ARQUIVO CSV
+    @DisplayName("Should Reject User When")
+    @ParameterizedTest(name = "{4}")
+    @CsvFileSource(
+            files = "src/test/resources/userMandatoryFields.csv",
+            nullValues = {"NULL", "N/A", "undefined"},
+            numLinesToSkip = 1
+    )
+    void shouldRejectUserWhen2(String name, String email, String password, String expectedExceptionMessage, String displayMessage) {
         ValidationException exception = assertThrows(ValidationException.class, () ->
                 {
                     UserBuilder.aUser().withName(name).withEmail(email).withPassword(password).now();

@@ -1,0 +1,4 @@
+Name, Email, Password, Message, DisplayName
+NULL, josef@email.com, password, Name cannot be null or empty, ... name is null or empty
+Josef, N/A, password, E-mail cannot be null or empty, ... e-mail is null or empty
+Josef, josef@email.com, undefined, Password cannot be null or empty, ... password is null or empty
