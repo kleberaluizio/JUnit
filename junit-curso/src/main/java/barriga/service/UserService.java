@@ -1,7 +1,6 @@
 package barriga.service;
 
 import barriga.domain.User;
-import barriga.exceptions.ValidationException;
 import barriga.repositories.UserRepository;
 
 import java.util.Optional;

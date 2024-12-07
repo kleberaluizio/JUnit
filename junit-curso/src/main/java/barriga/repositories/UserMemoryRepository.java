@@ -48,7 +48,5 @@ public class UserMemoryRepository implements UserRepository {
         repository.printUsers();
         repository.save(new User(null, "User #2", "user2@gmail.com", "aa"));
         repository.printUsers();
-        repository.save(new User(null, "User #2", "user2@gmail.com", "aa"));
-        repository.printUsers();
     }
 }
