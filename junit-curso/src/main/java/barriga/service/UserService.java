@@ -1,6 +1,7 @@
 package barriga.service;
 
 import barriga.domain.User;
+import barriga.exceptions.ValidationException;
 import barriga.repositories.UserRepository;
 
 import java.util.Optional;
@@ -14,11 +15,9 @@ public class UserService {
     }
 
     public User save(User user) {
-        // Connect with database
-        // Prepare SQL query
-        // Executar query
-        // Obter o usuário persistido
-
+        findUserByEmail(user.getEmail()).ifPresent(existingUser ->{
+            throw new ValidationException(String.format("User %s already exists!", existingUser.getEmail()));
+        });
         return repository.save(user);
     }
 

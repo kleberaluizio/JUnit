@@ -20,9 +20,6 @@ public class UserMemoryRepository implements UserRepository {
 
     @Override
     public User save(User user) {
-        getUserByEmail(user.getEmail()).ifPresent(existingUser ->{
-            throw new ValidationException(String.format("User %s already exists!", existingUser.getEmail()));
-        });
         User newUser = new User(nextUserId(), user.getName(), user.getEmail(), user.getPassword());
         users.add(newUser);
         return newUser;

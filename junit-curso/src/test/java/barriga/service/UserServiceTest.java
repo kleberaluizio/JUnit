@@ -1,7 +1,6 @@
 package barriga.service;
 
 import barriga.domain.User;
-import barriga.domain.builders.UserBuilder;
 import barriga.repositories.UserDummyRepository;
 import barriga.repositories.UserRepository;
 import org.junit.jupiter.api.Assertions;
@@ -12,7 +11,7 @@ import org.mockito.Mockito;
 import java.util.Optional;
 
 import static barriga.domain.builders.UserBuilder.aUser;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
     private UserService service;
@@ -101,4 +100,22 @@ public class UserServiceTest {
         Assertions.assertTrue(existingOptional.isPresent());
     }
 
+    @Test
+    public void shouldSaveUserWithSuccess() {
+        // GIVEN
+        UserRepository repository = Mockito.mock(UserRepository.class);
+        service = new UserService(repository);
+        User userToSave = aUser().withId(null).now();
+
+        // WHEN
+        //when(repository.getUserByEmail(userToSave.getEmail())).thenReturn(Optional.empty());
+        when(repository.save(userToSave)).thenReturn(aUser().now());
+
+        // THEN
+        User savedUser = service.save(userToSave);
+        Assertions.assertNotNull(savedUser.getId());
+
+        verify(repository).getUserByEmail(userToSave.getEmail());
+        //verify(repository).save(userToSave);
+    }
 }
