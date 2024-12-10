@@ -4,6 +4,7 @@ import barriga.domain.User;
 import barriga.repositories.UserDummyRepository;
 import barriga.repositories.UserRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -14,32 +15,36 @@ import static barriga.domain.builders.UserBuilder.aUser;
 import static org.mockito.Mockito.*;
 
 public class UserServiceTest {
+    private UserRepository repository;
     private UserService service;
+    private String EMAIL;
+
+    @BeforeEach
+    public void setup() {
+        repository = mock(UserRepository.class);
+        service = new UserService(repository);
+        EMAIL = "mail@mail.com";
+    }
 
     @Test
     public void shouldSaveUserWithSuccessUsingDummyRepository() {
-        service = new UserService(new UserDummyRepository());
+        UserService service = new UserService(new UserDummyRepository());
         User user = service.save(aUser().withId(null).now());
         Assertions.assertNotNull(user.getId());
     }
 
     @Test
     public void shouldReturnEmptyWhenUserNotExist() {
-        UserRepository repository = mock(UserRepository.class);
-        service = new UserService(repository);
-
         Mockito.when(repository.getUserByEmail("mail@mail.com")).thenReturn(Optional.empty());
-
         Optional<User> userOptional = service.findUserByEmail("mail@mail.com");
+
         Assertions.assertTrue(userOptional.isEmpty());
     }
 
     @Test
     public void shouldReturnUserWhenUserExists() {
         UserRepository repository = mock(UserRepository.class);
-        String EMAIL = "mail@mail.com";
         service = new UserService(repository);
-
         Mockito.when(repository.getUserByEmail(EMAIL))
                 .thenReturn(Optional.of(aUser().now()));
 
@@ -53,7 +58,6 @@ public class UserServiceTest {
     @DisplayName("USING TIMES")
     public void shouldReturnUserWhenUserExists1() {
         UserRepository repository = mock(UserRepository.class);
-        String EMAIL = "mail@mail.com";
         service = new UserService(repository);
 
         Mockito.when(repository.getUserByEmail(EMAIL))
@@ -78,15 +82,6 @@ public class UserServiceTest {
     @Test
     @DisplayName("MULTIPLES RETURNS")
     public void shouldReturnUserWhenUserExists2() {
-        UserRepository repository = mock(UserRepository.class);
-        String EMAIL = "mail@mail.com";
-        service = new UserService(repository);
-
-        /**
-        Mockito.when(repository.getUserByEmail(EMAIL))
-                .thenReturn(Optional.of(aUser().now()), Optional.of(aUser().now()))
-                .thenReturn(null);
-         **/ //OU
         Mockito.when(repository.getUserByEmail(EMAIL))
                 .thenReturn(Optional.of(aUser().now()), Optional.of(aUser().now()), null);
 
@@ -103,8 +98,6 @@ public class UserServiceTest {
     @Test
     public void shouldSaveUserWithSuccess() {
         // GIVEN
-        UserRepository repository = Mockito.mock(UserRepository.class);
-        service = new UserService(repository);
         User userToSave = aUser().withId(null).now();
 
         // WHEN
