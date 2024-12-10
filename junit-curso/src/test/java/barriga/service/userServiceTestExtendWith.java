@@ -4,38 +4,28 @@ import barriga.domain.User;
 import barriga.repositories.UserDummyRepository;
 import barriga.repositories.UserRepository;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
 import static barriga.domain.builders.UserBuilder.aUser;
 import static org.mockito.Mockito.*;
 
-public class UserServiceTest {
-    @Mock // Define que será mockado
+// Ao anotar a classe com o @ExtendWith(MockitoExtension.class), não preciso mais
+// do MockitoAnnotations.openMocks(this);
+@ExtendWith(MockitoExtension.class)
+public class userServiceTestExtendWith {
+    @Mock
     private UserRepository repository;
-    @InjectMocks // Define que será injetados os mocks necessários
+    @InjectMocks
     private UserService service;
-    private String EMAIL;
-
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-        EMAIL = "mail@mail.com";
-    }
-
-    @Test
-    public void shouldSaveUserWithSuccessUsingDummyRepository() {
-        UserService service = new UserService(new UserDummyRepository());
-        User user = service.save(aUser().withEmail("test@gmail.com").withId(null).now());
-        Assertions.assertNotNull(user.getId());
-    }
+    private String EMAIL = "mail@mail.com";
 
     @Test
     public void shouldReturnEmptyWhenUserNotExist() {
@@ -82,23 +72,7 @@ public class UserServiceTest {
         // Verifica se realmente houve alguma iteração além das que eu estava esperando
         Mockito.verifyNoMoreInteractions(repository);
     }
-
-    @Test
-    @DisplayName("MULTIPLES RETURNS")
-    public void shouldReturnUserWhenUserExists2() {
-        Mockito.when(repository.getUserByEmail(EMAIL))
-                .thenReturn(Optional.of(aUser().now()), Optional.of(aUser().now()), null);
-
-        Optional<User> existingOptional = service.findUserByEmail(EMAIL);
-        System.out.println(existingOptional);
-        existingOptional = service.findUserByEmail(EMAIL);
-        System.out.println(existingOptional);
-        existingOptional = service.findUserByEmail(EMAIL);
-        System.out.println(existingOptional);
-
-        Assertions.assertTrue(existingOptional.isPresent());
-    }
-
+    
     @Test
     public void shouldSaveUserWithSuccess() {
         // GIVEN
