@@ -1,7 +1,7 @@
 package barriga.service;
 
 import barriga.domain.User;
-import barriga.repositories.UserDummyRepository;
+import barriga.exceptions.ValidationException;
 import barriga.repositories.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -72,7 +72,7 @@ public class userServiceTestExtendWith {
         // Verifica se realmente houve alguma iteração além das que eu estava esperando
         Mockito.verifyNoMoreInteractions(repository);
     }
-    
+
     @Test
     public void shouldSaveUserWithSuccess() {
         // GIVEN
@@ -88,5 +88,19 @@ public class userServiceTestExtendWith {
 
         verify(repository).getUserByEmail(userToSave.getEmail());
         //verify(repository).save(userToSave);
+    }
+
+    @Test
+    public void shouldRejectExistingUser() {
+        User userToSave = aUser().withId(null).withEmail("user1@gmail.com").now();
+        Mockito.when(repository.getUserByEmail(userToSave.getEmail())).thenReturn(Optional.of(userToSave));
+
+        ValidationException ex = Assertions.assertThrows(ValidationException.class, ()->{
+            service.save(userToSave);
+        });
+
+        Assertions.assertTrue(ex.getMessage().endsWith("already exists!"));
+
+        verify(repository, never()).save(userToSave); // assert .save must not be called!
     }
 }

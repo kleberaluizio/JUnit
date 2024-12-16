@@ -1,7 +1,7 @@
 package barriga.service;
 
 import barriga.domain.User;
-import barriga.repositories.UserDummyRepository;
+import barriga.exceptions.ValidationException;
 import barriga.repositories.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,13 +28,6 @@ public class UserServiceTest {
     public void setup() {
         MockitoAnnotations.openMocks(this);
         EMAIL = "mail@mail.com";
-    }
-
-    @Test
-    public void shouldSaveUserWithSuccessUsingDummyRepository() {
-        UserService service = new UserService(new UserDummyRepository());
-        User user = service.save(aUser().withEmail("test@gmail.com").withId(null).now());
-        Assertions.assertNotNull(user.getId());
     }
 
     @Test
