@@ -27,9 +27,7 @@ public class UserMemoryRepository implements UserRepository {
 
     @Override
     public Optional<User> getUserByEmail(String email) {
-        return users.stream()
-                .filter(user -> user.getEmail().equalsIgnoreCase(email))
-                .findFirst();
+        return users.stream().filter(user -> user.getEmail().equalsIgnoreCase(email)).findFirst();
     }
 
     private Long nextUserId() {

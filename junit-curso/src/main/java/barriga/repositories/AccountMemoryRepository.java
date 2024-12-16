@@ -5,6 +5,7 @@ import barriga.domain.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class AccountMemoryRepository implements AccountRepository{
     private final List<Account> accounts;
@@ -25,8 +26,8 @@ public class AccountMemoryRepository implements AccountRepository{
     }
 
     @Override
-    public List<Account> findAll() {
-        return accounts;
+    public Optional<Account> getAccountByName(String name) {
+        return accounts.stream().filter(account -> account.getName().equalsIgnoreCase(name)).findFirst();
     }
 
     private Long nextAccountId() {
