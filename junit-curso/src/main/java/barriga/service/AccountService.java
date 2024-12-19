@@ -6,7 +6,6 @@ import barriga.exceptions.ValidationException;
 import barriga.repositories.AccountRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public class AccountService {
 
@@ -27,6 +26,6 @@ public class AccountService {
     }
 
     public List<Account> findAccountByUser(User user) {
-        return repository.getAccountByUser(user);
+        return repository.getAccountsByUser(user);
     }
 }

@@ -37,12 +37,26 @@ class AccountServiceTest {
     }
 
     @Test
+    public void shouldSaveAccountWithSuccessWhenHasAccounts() {
+        // GIVEN
+        Account accountToSave = aAccount().withId(null).now();
+
+        // WHEN
+        when(repository.getAccountsByUser(accountToSave.getUser())).thenReturn(List.of(aAccount().withName("Other account").now()));
+        when(repository.save(accountToSave)).thenReturn(aAccount().now());
+
+        // THEN
+        Account savedAccount = service.save(accountToSave);
+        Assertions.assertNotNull(savedAccount.getId());
+    }
+
+    @Test
     public void shouldRejectDuplicateAccount() {
         // GIVEN
         Account accountToSave = aAccount().withId(null).now();
 
         // WHEN
-        when(repository.getAccountByUser(accountToSave.getUser())).thenReturn(List.of(accountToSave));
+        when(repository.getAccountsByUser(accountToSave.getUser())).thenReturn(List.of(accountToSave));
 
         // THEN
         ValidationException exception = Assertions.assertThrows(ValidationException.class, () -> service.save(accountToSave));

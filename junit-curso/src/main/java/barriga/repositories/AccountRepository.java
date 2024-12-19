@@ -9,5 +9,5 @@ public interface AccountRepository {
 
     Account save(Account account);
 
-    List<Account> getAccountByUser(User user);
+    List<Account> getAccountsByUser(User user);
 }

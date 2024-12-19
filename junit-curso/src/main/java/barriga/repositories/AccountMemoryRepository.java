@@ -26,7 +26,7 @@ public class AccountMemoryRepository implements AccountRepository{
     }
 
     @Override
-    public List<Account> getAccountByUser(User user) {
+    public List<Account> getAccountsByUser(User user) {
         return accounts.stream().filter(account -> account.getUser().equals(user)).toList();
     }
 
