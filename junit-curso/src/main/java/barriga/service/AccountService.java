@@ -1,9 +1,11 @@
 package barriga.service;
 
 import barriga.domain.Account;
+import barriga.domain.User;
 import barriga.exceptions.ValidationException;
 import barriga.repositories.AccountRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public class AccountService {
@@ -15,15 +17,16 @@ public class AccountService {
     }
 
     public Account save(Account accountToSave) {
-        findAccountByName(accountToSave.getName())
-                .filter(existingAccount -> existingAccount.getUser().equals(accountToSave.getUser()))
+        findAccountByUser(accountToSave.getUser()).stream()
+                .filter(account -> account.getName().equalsIgnoreCase(accountToSave.getName()))
+                .findFirst()
                 .ifPresent(existingAccount -> {
-                    throw new ValidationException(String.format("Account name %s already exists!", existingAccount.getName()));
+                    throw new ValidationException("User already has an account with provided name!");
                 });
         return this.repository.save(accountToSave);
     }
 
-    public Optional<Account> findAccountByName(String name) {
-        return repository.getAccountByName(name);
+    public List<Account> findAccountByUser(User user) {
+        return repository.getAccountByUser(user);
     }
 }

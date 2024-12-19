@@ -26,8 +26,8 @@ public class AccountMemoryRepository implements AccountRepository{
     }
 
     @Override
-    public Optional<Account> getAccountByName(String name) {
-        return accounts.stream().filter(account -> account.getName().equalsIgnoreCase(name)).findFirst();
+    public List<Account> getAccountByUser(User user) {
+        return accounts.stream().filter(account -> account.getUser().equals(user)).toList();
     }
 
     private Long nextAccountId() {
