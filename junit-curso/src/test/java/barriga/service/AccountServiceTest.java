@@ -1,6 +1,8 @@
 package barriga.service;
 
 import barriga.domain.Account;
+import barriga.events.AccountEvent;
+import barriga.exceptions.EventException;
 import barriga.exceptions.ValidationException;
 import barriga.repositories.AccountRepository;
 import org.junit.jupiter.api.Assertions;
@@ -13,13 +15,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static barriga.domain.builders.AccountBuilder.aAccount;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AccountServiceTest {
 
     @Mock
     private AccountRepository repository;
+    @Mock
+    private AccountEvent event;
     @InjectMocks
     private AccountService service;
 
@@ -30,6 +34,7 @@ class AccountServiceTest {
 
         // WHEN
         when(repository.save(accountToSave)).thenReturn(aAccount().now());
+        doNothing().when(event).dispatch(aAccount().now(), AccountEvent.EventType.CREATED); // Mockito execute the verify for this action, parameters must be correctly
 
         // THEN
         Account savedAccount = service.save(accountToSave);
@@ -61,5 +66,22 @@ class AccountServiceTest {
         // THEN
         ValidationException exception = Assertions.assertThrows(ValidationException.class, () -> service.save(accountToSave));
         Assertions.assertEquals("User already has an account with provided name!",exception.getMessage());
+    }
+
+    @Test
+    public void shouldNotKeepAccountWithoutEvent() {
+        // GIVEN
+        Account accountToSave = aAccount().withId(null).now();
+        Account savedAccount = aAccount().now();
+        String EXCEPTION_MESSAGE = "Account creation was not perform, failed to dispatch event!";
+
+        // WHEN
+        when(repository.save(accountToSave)).thenReturn(savedAccount);
+        doThrow(new EventException(EXCEPTION_MESSAGE)).when(event).dispatch(savedAccount, AccountEvent.EventType.CREATED); // Mockito execute the verify for this action, parameters must be correctly
+
+        // THEN
+        String message = Assertions.assertThrows(ValidationException.class, () -> service.save(accountToSave)).getMessage();
+        Assertions.assertEquals(EXCEPTION_MESSAGE, message);
+        verify(repository, times(1)).deleteAccount(savedAccount);
     }
 }

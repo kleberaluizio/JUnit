@@ -2,6 +2,8 @@ package barriga.service;
 
 import barriga.domain.Account;
 import barriga.domain.User;
+import barriga.events.AccountEvent;
+import barriga.exceptions.EventException;
 import barriga.exceptions.ValidationException;
 import barriga.repositories.AccountRepository;
 
@@ -10,19 +12,29 @@ import java.util.List;
 public class AccountService {
 
     private final AccountRepository repository;
+    private AccountEvent event;
 
-    public AccountService(AccountRepository repository) {
+    public AccountService(AccountRepository repository, AccountEvent event) {
         this.repository = repository;
+        this.event = event;
     }
 
-    public Account save(Account accountToSave) {
+    public Account save(Account accountToSave) throws ValidationException {
         findAccountByUser(accountToSave.getUser()).stream()
                 .filter(account -> account.getName().equalsIgnoreCase(accountToSave.getName()))
                 .findFirst()
                 .ifPresent(existingAccount -> {
                     throw new ValidationException("User already has an account with provided name!");
                 });
-        return this.repository.save(accountToSave);
+
+        Account savedAccount = this.repository.save(accountToSave);
+        try{
+            event.dispatch(savedAccount, AccountEvent.EventType.CREATED);
+        } catch (EventException e) {
+            repository.deleteAccount(savedAccount);
+            throw new ValidationException("Account creation was not perform, failed to dispatch event!");
+        }
+        return savedAccount;
     }
 
     public List<Account> findAccountByUser(User user) {

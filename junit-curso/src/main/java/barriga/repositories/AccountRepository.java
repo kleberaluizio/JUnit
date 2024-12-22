@@ -10,4 +10,6 @@ public interface AccountRepository {
     Account save(Account account);
 
     List<Account> getAccountsByUser(User user);
+
+    void deleteAccount(Account account);
 }
