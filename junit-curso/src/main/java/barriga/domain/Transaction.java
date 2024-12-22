@@ -1,6 +1,7 @@
 package barriga.domain;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Transaction {
     private Long id;
@@ -56,5 +57,18 @@ public class Transaction {
 
     public void setStatus(Boolean status) {
         this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Transaction that = (Transaction) o;
+        return Objects.equals(description, that.description) && Objects.equals(value, that.value) && Objects.equals(account, that.account) && Objects.equals(date, that.date) && Objects.equals(status, that.status);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(description, value, account, date, status);
     }
 }
