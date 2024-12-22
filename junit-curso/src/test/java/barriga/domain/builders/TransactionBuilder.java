@@ -2,6 +2,8 @@ package barriga.domain.builders;
 
 import barriga.domain.Account;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import barriga.domain.Transaction;
 
 public class TransactionBuilder {
@@ -9,7 +11,7 @@ public class TransactionBuilder {
 	private String description;
 	private Double value;
 	private Account account;
-	private LocalDate date;
+	private LocalDateTime date;
 	private Boolean status;
 
 	private TransactionBuilder(){}
@@ -25,7 +27,7 @@ public class TransactionBuilder {
 		builder.description = "Valid Transaction";
 		builder.value = 100.0;
 		builder.account = AccountBuilder.aAccount().now();
-		builder.date = LocalDate.now();
+		builder.date = LocalDateTime.now();
 		builder.status = false;
 	}
 
@@ -49,7 +51,7 @@ public class TransactionBuilder {
 		return this;
 	}
 
-	public TransactionBuilder withDate(LocalDate date) {
+	public TransactionBuilder withDate(LocalDateTime date) {
 		this.date = date;
 		return this;
 	}

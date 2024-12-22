@@ -7,20 +7,17 @@ import barriga.domain.builders.AccountBuilder;
 import barriga.domain.builders.TransactionBuilder;
 import barriga.exceptions.ValidationException;
 import barriga.repositories.TransactionDAO;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 import static barriga.domain.builders.AccountBuilder.aAccount;
@@ -33,9 +30,11 @@ class TransactionServiceTest {
 
     @Mock private TransactionDAO transactionDAO;
     @InjectMocks private TransactionService transactionService;
+    @Captor private ArgumentCaptor<Transaction> transactionCaptor;
 
     @Test
     void save_shouldSaveValidTransaction() {
+        Assumptions.assumeTrue(LocalDateTime.now().getHour() < 16); // Allowed me to execute test based on a condition that it's not under my control.
         //GIVEN
         Transaction transaction = TransactionBuilder.aTransaction().now();
         Transaction savedTransaction = TransactionBuilder.aTransaction().withId(1L).now();
@@ -79,11 +78,11 @@ class TransactionServiceTest {
                 "Valid Transaction, 100.0, false, true, false, Transaction date is null"}
             , nullValues = "null"
     )
-    void save_shouldValidationExceptionWhenInvalidTransactionTriesToBeSaved(
+    void save_shouldThrowValidationExceptionWhenInvalidTransactionTriesToBeSaved(
             String description, Double value, boolean isAccountNull, boolean isDateNull, Boolean status, String displayMessage) {
         //GIVEN
         Account account = isAccountNull? null: aAccount().now();
-        LocalDate date = isDateNull? null: LocalDate.now();
+        LocalDateTime date = isDateNull? null: LocalDateTime.now();
 
         Transaction transaction = TransactionBuilder.aTransaction()
                 .withDescription(description)
@@ -104,8 +103,8 @@ class TransactionServiceTest {
     @ParameterizedTest(name ="{5}")
     @DisplayName("UsingDataProvider : Should Throw ValidationException when ...")
     @MethodSource(value = "transactionProvider")
-    void save_shouldValidationExceptionWhenInvalidTransactionTriesToBeSaved_UsingDataProvider(
-            String description, Double value, Account account, LocalDate date, Boolean status, String message) {
+    void save_shouldThrowValidationExceptionWhenInvalidTransactionTriesToBeSaved_UsingDataProvider(
+            String description, Double value, Account account, LocalDateTime date, Boolean status, String message) {
         //GIVEN
         Transaction transaction = TransactionBuilder.aTransaction()
                 .withDescription(description)
@@ -125,10 +124,25 @@ class TransactionServiceTest {
 
     private static Stream<Arguments> transactionProvider() {
         return Stream.of(
-                Arguments.of(null, 100.0, aAccount().now(), LocalDate.now(), false, "Transaction description is null"),
-                Arguments.of("Valid Transaction", null, aAccount().now(), LocalDate.now(), false, "Transaction value is null"),
-                Arguments.of("Valid Transaction", 100.0, null, LocalDate.now(), false, "Transaction account is null"),
-                Arguments.of("Valid Transaction", 100.0, aAccount().now(), null, false, "Transaction date is null")
+                Arguments.of(null, 100.0, aAccount().now(), LocalDateTime.now(), false, "Transaction description is null"),
+                Arguments.of("Valid Transaction", null, aAccount().now(), LocalDateTime.now(), false, "Transaction value is null"),
+                Arguments.of("Valid Transaction", 100.0, null, LocalDateTime.now(), false, "Transaction account is null"),
+                Arguments.of("Valid Transaction", 100.0, aAccount().now(), null, false, "Transaction date is null"),
+                Arguments.of("Valid Transaction", 100.0, aAccount().now(), LocalDateTime.now(), false, "Transaction date should not be greater than 16")
         );
+    }
+
+    @Disabled
+    @Test
+    @DisplayName("-DISABLED-Should Throw Validation Exception when Invalid")
+    void save_shouldSetStatusFalseWhenStatusIsNull() {
+        //GIVEN
+        Transaction transaction = TransactionBuilder.aTransaction().withStatus(null).now();
+        //WHEN
+        when(transactionDAO.save(transaction)).thenReturn(transaction);
+        verify(transactionDAO).save(transactionCaptor.capture());
+        transactionService.save(transaction);
+        //THEN
+        assertFalse(transactionCaptor.getValue().getStatus());
     }
 }

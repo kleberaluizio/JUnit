@@ -1,6 +1,7 @@
 package barriga.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Transaction {
@@ -8,7 +9,7 @@ public class Transaction {
     private String description;
     private Double value;
     private Account account;
-    private LocalDate date;
+    private LocalDateTime date;
     private Boolean status;
 
     public Long getId() {
@@ -43,11 +44,11 @@ public class Transaction {
         this.account = account;
     }
 
-    public LocalDate getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

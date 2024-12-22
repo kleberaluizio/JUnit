@@ -12,7 +12,7 @@ public class TransactionService {
         return dao.save(transaction);
     }
 
-    private void assertValidData(Transaction transaction) {
+    public void assertValidData(Transaction transaction) {
         if (transaction == null) {
             throw new ValidationException("Transaction is null");
         }
@@ -27,6 +27,9 @@ public class TransactionService {
         }
         if (transaction.getDate() == null) {
             throw new ValidationException("Transaction date is null");
+        }
+        if (transaction.getDate().getHour() > 16) {
+            throw new ValidationException("Transaction date should not be greater than 16");
         }
         if (transaction.getStatus() == null) {
             transaction.setStatus(false);
