@@ -7,10 +7,6 @@ import barriga.repositories.TransactionDAO;
 public class TransactionService {
     private TransactionDAO dao;
 
-    public TransactionService(TransactionDAO dao) {
-        this.dao = dao;
-    }
-
     public Transaction save(Transaction transaction) {
         assertValidData(transaction);
         return dao.save(transaction);

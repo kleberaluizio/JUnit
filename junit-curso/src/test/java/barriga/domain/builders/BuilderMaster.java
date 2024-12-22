@@ -1,6 +1,7 @@
 package barriga.domain.builders;
 
 import barriga.domain.Account;
+import barriga.domain.Transaction;
 import barriga.domain.User2;
 
 import static java.lang.String.format;
@@ -163,6 +164,6 @@ public class BuilderMaster {
 
     public static void main(String[] args) {
         BuilderMaster master = new BuilderMaster();
-        master.createBuilderClass(Account.class);
+        master.createBuilderClass(Transaction.class);
     }
 }
