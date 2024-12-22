@@ -7,6 +7,7 @@ import barriga.exceptions.EventException;
 import barriga.exceptions.ValidationException;
 import barriga.repositories.AccountRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class AccountService {
@@ -27,7 +28,9 @@ public class AccountService {
                     throw new ValidationException("User already has an account with provided name!");
                 });
 
-        Account savedAccount = this.repository.save(accountToSave);
+        Account savedAccount = this.repository.save(
+                new Account(accountToSave.getId(), accountToSave.getName() + LocalDateTime.now(), accountToSave.getUser())
+        );
         try{
             event.dispatch(savedAccount, AccountEvent.EventType.CREATED);
         } catch (EventException e) {

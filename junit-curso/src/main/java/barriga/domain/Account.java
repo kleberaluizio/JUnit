@@ -63,4 +63,13 @@ public class Account {
     public int hashCode() {
         return Objects.hash(id, name, user);
     }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", user=" + user +
+                '}';
+    }
 }

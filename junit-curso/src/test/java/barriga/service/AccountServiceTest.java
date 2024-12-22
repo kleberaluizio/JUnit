@@ -8,8 +8,7 @@ import barriga.repositories.AccountRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -20,12 +19,10 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class AccountServiceTest {
 
-    @Mock
-    private AccountRepository repository;
-    @Mock
-    private AccountEvent event;
-    @InjectMocks
-    private AccountService service;
+    @Mock private AccountRepository repository;
+    @Mock private AccountEvent event;
+    @InjectMocks private AccountService service;
+    @Captor private ArgumentCaptor<Account> accountCaptor;
 
     @Test
     public void shouldSaveAccountWithSuccess() {
@@ -33,12 +30,14 @@ class AccountServiceTest {
         Account accountToSave = aAccount().withId(null).now();
 
         // WHEN
-        when(repository.save(accountToSave)).thenReturn(aAccount().now());
+        when(repository.save(Mockito.any(Account.class))).thenReturn(aAccount().now());
         doNothing().when(event).dispatch(aAccount().now(), AccountEvent.EventType.CREATED); // Mockito execute the verify for this action, parameters must be correctly
 
         // THEN
         Account savedAccount = service.save(accountToSave);
         Assertions.assertNotNull(savedAccount.getId());
+        verify(repository).save(accountCaptor.capture());
+        Assertions.assertTrue(accountCaptor.getValue().getName().startsWith(accountToSave.getName()));
     }
 
     @Test
@@ -48,7 +47,7 @@ class AccountServiceTest {
 
         // WHEN
         when(repository.getAccountsByUser(accountToSave.getUser())).thenReturn(List.of(aAccount().withName("Other account").now()));
-        when(repository.save(accountToSave)).thenReturn(aAccount().now());
+        when(repository.save(Mockito.any(Account.class))).thenReturn(aAccount().now());
 
         // THEN
         Account savedAccount = service.save(accountToSave);
@@ -76,7 +75,7 @@ class AccountServiceTest {
         String EXCEPTION_MESSAGE = "Account creation was not perform, failed to dispatch event!";
 
         // WHEN
-        when(repository.save(accountToSave)).thenReturn(savedAccount);
+        when(repository.save(Mockito.any(Account.class))).thenReturn(savedAccount);
         doThrow(new EventException(EXCEPTION_MESSAGE)).when(event).dispatch(savedAccount, AccountEvent.EventType.CREATED); // Mockito execute the verify for this action, parameters must be correctly
 
         // THEN
