@@ -37,7 +37,10 @@ class AccountServiceTest {
         Account savedAccount = service.save(accountToSave);
         Assertions.assertNotNull(savedAccount.getId());
         verify(repository).save(accountCaptor.capture());
-        Assertions.assertTrue(accountCaptor.getValue().getName().startsWith(accountToSave.getName()));
+        Assertions.assertAll("Account",
+                ()-> Assertions.assertNull(accountCaptor.getValue().getId()),
+                ()->Assertions.assertTrue(accountCaptor.getValue().getName().startsWith(accountToSave.getName()))
+        );
     }
 
     @Test
