@@ -8,6 +8,7 @@ import barriga.domain.builders.TransactionBuilder;
 import barriga.exceptions.ValidationException;
 import barriga.repositories.TransactionDAO;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -25,6 +26,7 @@ import static barriga.domain.builders.UserBuilder.aUser;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+//@EnabledIf(value = "isValidHour")
 @ExtendWith(MockitoExtension.class)
 class TransactionServiceTest {
 
@@ -34,29 +36,36 @@ class TransactionServiceTest {
 
     @Test
     void save_shouldSaveValidTransaction() {
-        Assumptions.assumeTrue(LocalDateTime.now().getHour() < 16); // Allowed me to execute test based on a condition that it's not under my control.
         //GIVEN
         Transaction transaction = TransactionBuilder.aTransaction().now();
         Transaction savedTransaction = TransactionBuilder.aTransaction().withId(1L).now();
-
-        //WHEN
         when(transactionDAO.save(transaction)).thenReturn(savedTransaction);
 
-        //THEN
-        assertAll("Valid Transaction",
-                ()-> assertEquals(transaction, transactionService.save(transaction)),
-                ()-> verify(transactionDAO, times(1)).save(transaction)
-        );
-        // OR CHAINED assertAll
-        assertAll("Valid Transaction",
-                ()-> assertEquals(transaction, transactionService.save(transaction)),
-                ()-> assertAll("Valid Account",
-                        ()-> assertEquals(transaction.getAccount(), savedTransaction.getAccount()),
-                        ()-> assertAll("Valid User",
-                                ()-> assertEquals(transaction.getAccount().getUser(), savedTransaction.getAccount().getUser())
-                        )
-                )
-        );
+        LocalDateTime desiredData = LocalDateTime.of(2023, 1, 1, 4, 30, 28);
+        System.out.println(desiredData);
+
+        //MOCKING STATIC METHOD
+        try(MockedStatic<LocalDateTime> ldt = mockStatic(LocalDateTime.class)){
+            //WHEN
+            ldt.when(LocalDateTime::now).thenReturn(desiredData);
+            when(transactionService.save(transaction)).thenReturn(savedTransaction);
+
+            //THEN
+            assertAll("Valid Transaction",
+                    ()-> assertEquals(transaction, transactionService.save(transaction)),
+                    ()-> verify(transactionDAO, times(1)).save(transaction)
+            );
+            // OR CHAINED assertAll
+            assertAll("Valid Transaction",
+                    ()-> assertEquals(transaction, transactionService.save(transaction)),
+                    ()-> assertAll("Valid Account",
+                            ()-> assertEquals(transaction.getAccount(), savedTransaction.getAccount()),
+                            ()-> assertAll("Valid User",
+                                    ()-> assertEquals(transaction.getAccount().getUser(), savedTransaction.getAccount().getUser())
+                            )
+                    )
+            );
+        }
     }
 
     @Test
@@ -128,7 +137,7 @@ class TransactionServiceTest {
                 Arguments.of("Valid Transaction", null, aAccount().now(), LocalDateTime.now(), false, "Transaction value is null"),
                 Arguments.of("Valid Transaction", 100.0, null, LocalDateTime.now(), false, "Transaction account is null"),
                 Arguments.of("Valid Transaction", 100.0, aAccount().now(), null, false, "Transaction date is null"),
-                Arguments.of("Valid Transaction", 100.0, aAccount().now(), LocalDateTime.now(), false, "Transaction date should not be greater than 16")
+                Arguments.of("Valid Transaction", 100.0, aAccount().now(), LocalDateTime.now(), false, "Transaction date should not be greater than 5")
         );
     }
 
@@ -145,4 +154,8 @@ class TransactionServiceTest {
         //THEN
         assertFalse(transactionCaptor.getValue().getStatus());
     }
+
+//    private static boolean isValidHour() {
+//        return LocalDateTime.now().getHour() > 16;
+//    }
 }
