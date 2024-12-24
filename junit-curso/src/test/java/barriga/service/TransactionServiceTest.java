@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.stream.Stream;
 
 import static barriga.domain.builders.AccountBuilder.aAccount;
@@ -32,6 +33,7 @@ class TransactionServiceTest {
 
     @Mock private TransactionDAO transactionDAO;
     @InjectMocks private TransactionService transactionService;
+    @InjectMocks private TransactionService2 transactionService2;
     @Captor private ArgumentCaptor<Transaction> transactionCaptor;
 
     @Test
@@ -66,6 +68,34 @@ class TransactionServiceTest {
                     )
             );
         }
+    }
+
+    // MOCKING CONSTRUCTOR
+    @Test
+    void save_shouldSaveValidTransaction_MOCKING_CONSTRUCTOR() {
+        //GIVEN
+        Transaction transaction = TransactionBuilder.aTransaction().now();
+        Transaction savedTransaction = TransactionBuilder.aTransaction().withId(1L).now();
+        when(transactionDAO.save(transaction)).thenReturn(savedTransaction);
+
+        System.out.println(new Date().getHours());
+        //MOCKING CONSTRUCTOR
+        try(MockedConstruction<Date> date = mockConstruction(Date.class,
+                (mock, context)-> when(mock.getHours()).thenReturn(4)
+        )){
+            //WHEN
+            System.out.println(new Date().getHours());
+
+            when(transactionService2.save(transaction)).thenReturn(savedTransaction);
+
+            //THEN
+            assertAll("Valid Transaction",
+                    ()-> assertEquals(transaction, transactionService2.save(transaction)),
+                    ()-> verify(transactionDAO, times(1)).save(transaction),
+                    ()-> assertEquals(3, date.constructed().size())
+            );
+        }
+        System.out.println(new Date().getHours());
     }
 
     @Test

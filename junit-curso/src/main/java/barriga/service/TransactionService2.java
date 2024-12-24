@@ -7,7 +7,7 @@ import barriga.repositories.TransactionDAO;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-public class TransactionService {
+public class TransactionService2 {
     private TransactionDAO dao;
 
     public Transaction save(Transaction transaction) {
@@ -31,8 +31,9 @@ public class TransactionService {
         if (transaction.getDate() == null) {
             throw new ValidationException("Transaction date is null");
         }
-        if (LocalDateTime.now().getHour() > 5) {
-            throw new ValidationException("Transaction date should not be greater than 5");
+        // Only for learning purposes
+        if (new Date().getHours() > 7) {
+            throw new ValidationException("Transaction date should not be greater than 7");
         }
         if (transaction.getStatus() == null) {
             transaction.setStatus(false);
