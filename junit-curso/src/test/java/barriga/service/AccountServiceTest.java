@@ -1,7 +1,7 @@
 package barriga.service;
 
 import barriga.domain.Account;
-import barriga.events.AccountEvent;
+import barriga.external.AccountEvent;
 import barriga.exceptions.EventException;
 import barriga.exceptions.ValidationException;
 import barriga.repositories.AccountRepository;

@@ -1,4 +1,4 @@
-package barriga.events;
+package barriga.external;
 
 import barriga.domain.Account;
 

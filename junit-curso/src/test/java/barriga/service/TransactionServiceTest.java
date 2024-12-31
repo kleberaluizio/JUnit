@@ -6,6 +6,7 @@ import barriga.domain.User;
 import barriga.domain.builders.AccountBuilder;
 import barriga.domain.builders.TransactionBuilder;
 import barriga.exceptions.ValidationException;
+import barriga.external.ClockService;
 import barriga.repositories.TransactionDAO;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -34,6 +35,8 @@ class TransactionServiceTest {
     @Mock private TransactionDAO transactionDAO;
     @InjectMocks private TransactionService transactionService;
     @InjectMocks private TransactionService2 transactionService2;
+    @Mock private ClockService clockService;
+    @InjectMocks private TransactionServiceInjectTime transactionService3;
     @Captor private ArgumentCaptor<Transaction> transactionCaptor;
 
     @Test
@@ -98,10 +101,30 @@ class TransactionServiceTest {
         System.out.println(new Date().getHours());
     }
 
+    // Refactoring for dependency inversion
+    @Test
+    void save_shouldSaveValidTransaction_REFACTORING() {
+        //GIVEN
+        Transaction transaction = TransactionBuilder.aTransaction().now();
+        Transaction savedTransaction = TransactionBuilder.aTransaction().withId(1L).now();
+
+        //WHEN
+        when(transactionDAO.save(transaction)).thenReturn(savedTransaction);
+        when(clockService.getCurrentTime()).thenReturn(LocalDateTime.of(2024, 1, 1, 2, 0, 0));
+        when(transactionService3.save(transaction)).thenReturn(savedTransaction);
+
+        //THEN
+        assertAll("Valid Transaction",
+                () -> assertEquals(transaction, transactionService3.save(transaction)),
+                () -> verify(transactionDAO, times(1)).save(transaction)
+        );
+    }
+
+
     @Test
     void save_shouldValidationExceptionWhenInvalidTransactionTriesToBeSaved() {
         assertAll("Invalid Transaction",
-                () -> Assertions.assertThrows(ValidationException.class, () -> transactionService.save(null)),
+                () -> assertThrows(ValidationException.class, () -> transactionService.save(null)),
                 () -> verify(transactionDAO, never()).save(null)
         );
     }
@@ -118,7 +141,7 @@ class TransactionServiceTest {
             , nullValues = "null"
     )
     void save_shouldThrowValidationExceptionWhenInvalidTransactionTriesToBeSaved(
-            String description, Double value, boolean isAccountNull, boolean isDateNull, Boolean status, String displayMessage) {
+            String description, Double value, boolean isAccountNull, boolean isDateNull, Boolean status, String message) {
         //GIVEN
         Account account = isAccountNull? null: aAccount().now();
         LocalDateTime date = isDateNull? null: LocalDateTime.now();
@@ -132,8 +155,9 @@ class TransactionServiceTest {
                 .now();
 
         //THEN
+        ValidationException exception = assertThrows(ValidationException.class, () -> transactionService.save(transaction));
         assertAll("Invalid Transaction",
-                ()-> Assertions.assertThrows(ValidationException.class, () -> transactionService.save(transaction)),
+                ()-> assertEquals(message, exception.getMessage()),
                 ()-> verify(transactionDAO, never()).save(transaction)
         );
     }
