@@ -30,7 +30,7 @@ import static org.mockito.Mockito.*;
 
 //@EnabledIf(value = "isValidHour")
 @ExtendWith(MockitoExtension.class)
-class TransactionServiceTest {
+public class TransactionServiceTest {
 
     @Mock private TransactionDAO transactionDAO;
     @InjectMocks private TransactionService transactionService;
