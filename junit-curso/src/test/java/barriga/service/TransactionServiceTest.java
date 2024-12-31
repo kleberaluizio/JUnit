@@ -27,7 +27,8 @@ import static barriga.domain.builders.AccountBuilder.aAccount;
 import static barriga.domain.builders.UserBuilder.aUser;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
+@Tag("service")
+@Tag("user")
 //@EnabledIf(value = "isValidHour")
 @ExtendWith(MockitoExtension.class)
 public class TransactionServiceTest {
