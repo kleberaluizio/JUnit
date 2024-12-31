@@ -195,19 +195,24 @@ class TransactionServiceTest {
         );
     }
 
-    @Disabled
     @Test
-    @DisplayName("-DISABLED-Should Throw Validation Exception when Invalid")
+    @DisplayName("Should set status False when status is null")
     void save_shouldSetStatusFalseWhenStatusIsNull() {
         //GIVEN
         Transaction transaction = TransactionBuilder.aTransaction().withStatus(null).now();
         //WHEN
         when(transactionDAO.save(transaction)).thenReturn(transaction);
-        verify(transactionDAO).save(transactionCaptor.capture());
-        transactionService.save(transaction);
+        LocalDateTime desiredData = LocalDateTime.of(2023, 1, 1, 4, 30, 28);
+
+        try(MockedStatic<LocalDateTime> ldt = mockStatic(LocalDateTime.class)) {
+            ldt.when(LocalDateTime::now).thenReturn(desiredData);
+            transactionService.save(transaction);
+        }
         //THEN
+        verify(transactionDAO).save(transactionCaptor.capture());
         assertFalse(transactionCaptor.getValue().getStatus());
     }
+
 
 //    private static boolean isValidHour() {
 //        return LocalDateTime.now().getHour() > 16;

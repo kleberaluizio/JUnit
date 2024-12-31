@@ -5,7 +5,6 @@ import barriga.exceptions.ValidationException;
 import barriga.repositories.TransactionDAO;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class TransactionService {
     private TransactionDAO dao;
